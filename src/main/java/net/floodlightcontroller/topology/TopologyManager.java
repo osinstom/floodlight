@@ -76,7 +76,7 @@ public class TopologyManager implements IFloodlightModule, ITopologyService, IRo
     /**
 	 * Maximum number of paths for multipath L2 forwarding
 	 */
-	private Integer numberOfMultipaths;
+	private Integer numberOfMultipaths = 3;
 	
     /**
      * Role of the controller.
@@ -853,7 +853,15 @@ public class TopologyManager implements IFloodlightModule, ITopologyService, IRo
         registerTopologyDebugCounters();
         registerTopologyDebugEvents();
         
-        numberOfMultipaths = Integer.parseInt(context.getConfigParams(this).get("numberOfMultipaths"));
+        String numMps = context.getConfigParams(this).get("numberOfMultipaths");
+        if (numMps != null) {
+            try {
+                numberOfMultipaths = Integer.parseInt(numMps.trim());
+            } catch (NumberFormatException e) {
+                log.error("Could not parse numberOfMultipaths {}. Using default {}",
+                        numMps, numberOfMultipaths);
+            }
+        }
     }
 
     protected void registerTopologyDebugEvents() throws FloodlightModuleException {
